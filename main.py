@@ -20,6 +20,10 @@
 # single api response of 1 post
 # Validastion errors
 
+# Video 4
+# Pydantic models and schemas
+# Post endpoint to add posts
+
 from fastapi import FastAPI, Request, status
 # To add static files
 from fastapi.staticfiles import StaticFiles
