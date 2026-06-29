@@ -24,6 +24,16 @@
 # Pydantic models and schemas
 # Post endpoint to add posts
 
+# Video 5
+# Connecting to a real database with SQLAlchemy
+# 3 LAYERS
+# sql model
+# Pydantic Schemas (accept and return from api)
+# FAST API request
+# pip install sqlalchemy
+# uv add sqlalchemy
+
+
 from fastapi import FastAPI, Request, status
 # To add static files
 from fastapi.staticfiles import StaticFiles
@@ -35,13 +45,22 @@ from starlette.exceptions import HTTPException as StarletteHTTPException # Not u
 
 # Clean Architecture modifications, adding client
 from posts import controller, controllerhtml
+from users import controller as controllerUser, controllerhtml as controllerhtmlUser
 from directories import templates
+
+# Create database
+from db import Base, engine
+
+Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
+app.mount("/media", StaticFiles(directory="media"), name="media")
 app.include_router(controller.router, prefix="/api/v1/posts", tags=["Post"])
 app.include_router(controllerhtml.router, tags=["Post"])
+app.include_router(controllerUser.router, prefix="/api/v1/users", tags=["User"])
+app.include_router(controllerhtmlUser.router, prefix="/users", tags=["User"])
 
 ## StarletteHTTPException Handler
 @app.exception_handler(StarletteHTTPException)
@@ -83,7 +102,7 @@ def validation_exception_handler(request: Request, exception: RequestValidationE
         {
             "status_code": status.HTTP_422_UNPROCESSABLE_CONTENT,
             "title": status.HTTP_422_UNPROCESSABLE_CONTENT,
-            "message": "Invalid request. Please check your input and try again.",
+            "message": f"Invalid request. Please check your input and try again.\n{exception.errors()}",
         },
         status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
     )
