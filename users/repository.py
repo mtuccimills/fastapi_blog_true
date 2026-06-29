@@ -1,7 +1,7 @@
 from sqlalchemy import select
 #from sqlalchemy.ext.asyncio import AsyncSession
 #from model import Post
-from .client import UserCreate, UserUpdate
+from .client import UserCreate, UserUpdate, UserResponse
 from sqlalchemy.orm import Session, selectinload
 import models
 
@@ -40,10 +40,22 @@ class UserRepository:
         self.db.refresh(new_user)
         return new_user
 
-    def update(self, user_data: UserUpdate) -> models.User:
-        db_user = self.find_by_id(user_data.id)
+    def update_full(self, user_id: int, user_data: UserResponse) -> models.User:
+        db_user = self.find_by_id(user_id)
         db_user.username = user_data.username
         db_user.email = user_data.email
+        self.db.commit()
+        self.db.refresh(db_user)
+        return db_user
+
+    def update_partial(self,user_id:int, user_data: UserUpdate) -> models.User:
+        db_user = self.find_by_id(user_id)
+
+        # Update Logic
+        update_date = user_data.model_dump(exclude_unset=True)
+        for field, value in update_date.items():
+            setattr(db_user, field, value)
+
         self.db.commit()
         self.db.refresh(db_user)
         return db_user

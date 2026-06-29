@@ -22,21 +22,20 @@ class UserCreate(UserBase):
     # Add password for authentication
     pass
 
-class UserUpdate(UserBase):
-    # Add password for authentication
-    id:int    
+class UserUpdate(BaseModel):
+    username: str | None = Field(defaule=None,min_length=1,max_length=50)
+    email: EmailStr | None = Field(default=None,max_length=120) # EmailStr validates that is not empty
+    
     model_config = ConfigDict(
         from_attributes=True,
         populate_by_name=True,
         json_schema_extra={
             "example": {
-                "id": "1",
-                "username": "Mat",
-                "email": "mat@gmail.com",
+                "username": "Matias"
             }
         }
     )
-    pass
+
 
 class UserResponse(UserBase):
     id:int

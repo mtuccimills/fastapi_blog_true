@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 from .client import PostResponse, PostCreate, PostUpdate
 from .service import PostService
 from .repository import PostRepository
@@ -13,6 +14,22 @@ router = APIRouter()
 def get_service(db: Session = Depends(get_db)) -> PostService:
     repository = PostRepository(db)
     return PostService(repository) # db -> repository -> service
+=======
+from .client import PostCreate, PostUpdate, PostResponse
+from .service import PostService
+from .repository import PostRepository
+from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy.orm import Session
+from db import get_db
+
+router = APIRouter()
+
+
+def get_service(db: Session = Depends(get_db)) -> PostService:
+    repository = PostRepository(db)
+    return PostService(repository)
+
+>>>>>>> 759d8f44408be76c01af4594ba217c5022bd4cc0
 
 @router.get("/", response_model=list[PostResponse])
 def get_posts(service: PostService = Depends(get_service)):
@@ -23,20 +40,45 @@ def get_posts(service: PostService = Depends(get_service)):
             detail="No posts found"
         )
     return posts
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> 759d8f44408be76c01af4594ba217c5022bd4cc0
 @router.get("/{id}", response_model=PostResponse)
 def find_by_id(id: int, service: PostService = Depends(get_service)):
     return service.findById(id)
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 759d8f44408be76c01af4594ba217c5022bd4cc0
 @router.post("/", response_model=PostResponse, status_code=status.HTTP_201_CREATED)
 def create_post(post: PostCreate, service: PostService = Depends(get_service)):
     return service.create(post)
 
+<<<<<<< HEAD
 @router.put("/", response_model=PostResponse)
 def update_post(post: PostUpdate, service: PostService = Depends(get_service)):
     return service.update(post)
+=======
+
+@router.put("/", response_model=PostResponse)
+def update_post_full(post_id: int, post: PostCreate, service: PostService = Depends(get_service)):
+    return service.update_full(post_id, post)
+
+
+@router.patch("/", response_model=PostResponse)
+def update_post_partial(post_id: int, post: PostUpdate, service: PostService = Depends(get_service)):
+    return service.update_partial(post_id, post)
+
+>>>>>>> 759d8f44408be76c01af4594ba217c5022bd4cc0
 
 @router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_post(id: int, service: PostService = Depends(get_service)):
     return service.delete(id)
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> 759d8f44408be76c01af4594ba217c5022bd4cc0

@@ -18,8 +18,12 @@ class PostService:
         new_post = self.repository.create(post)
         return PostResponse.model_validate(new_post)
 
-    def update(self, post: PostUpdate) -> PostResponse:
-        update_post = self.repository.update(post)
+    def update_full(self, post_id: int, post: PostCreate) -> PostResponse:
+        update_post = self.repository.update_full(post_id, post)
+        return PostResponse.model_validate(update_post)
+
+    def update_partial(self, post_id: int, post: PostUpdate) -> PostResponse:
+        update_post = self.repository.update_partial(post_id, post)
         return PostResponse.model_validate(update_post)
 
     def delete(self, id: int) -> bool:

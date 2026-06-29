@@ -44,31 +44,26 @@ class PostRepository:
         self.db.refresh(new_db_post)
         return new_db_post
 
-    def update(self, post_data: PostUpdate) -> models.Post | None:
-        result = self.db.execute(select(models.Post).where(models.Post.id == post_data.id))
-        db_post = result.scalar_one_or_none()
-        if db_post:
-            db_post.title = post_data.title
-            db_post.content = post_data.content
-            #db_post.user_id = post_data.user_id # User id shouldn't change on a simple update, maybe on another process but let's check that later on.
-            self.db.commit()
-            self.db.refresh(db_post)
-        else: 
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail = f"Post with id {post_data.id} not found"
-            )
+    def update_full(self, post_id: int, post_data: PostCreate) -> models.Post:
+        db_post = self.find_by_id(post_id)
+        db_post.title = post_data.title
+        db_post.content = post_data.content
+        db_post.user_id = post_data.user_id
+        self.db.commit()
+        self.db.refresh(db_post)
+        return db_post
+
+    def update_partial(self, post_id: int, post_data: PostUpdate) -> models.Post:
+        db_post = self.find_by_id(post_id)
+        update_date = post_data.model_dump(exclude_unset=True)
+        for field, value in update_date.items():
+            setattr(db_post, field, value)
+        self.db.commit()
+        self.db.refresh(db_post)
         return db_post
 
     def delete(self, id: int) -> bool:
-        result = self.db.execute(select(models.Post).where(models.Post.id == id))
-        db_post = result.scalar_one_or_none()
-        if not db_post:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail=f"Post with id {id} not found"
-            )
+        db_post = self.find_by_id(id)
         self.db.delete(db_post)
         self.db.commit()
         return True
-    

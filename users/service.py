@@ -56,29 +56,45 @@ class UserService:
         new_user = self.repository.create(user_data)
         return UserResponse.model_validate(new_user)
 
-    def update(self, user_data: UserUpdate) -> UserResponse:
-        existing_user = self.repository.find_by_id(user_data.id)
-        if not existing_user:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail=f"Id {user_data.id} not found",
-            )
-
+    def update_full(self, user_id: int, user_data: UserCreate) -> UserResponse:
+        existing_user = self.find_by_id(user_id)
         existing_user = self.repository.find_by_email(user_data.email)
-        if existing_user and existing_user.id != user_data.id:  # add this check
+        if existing_user:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail=f"Email {user_data.email} already exists",
+                detail=f"Email {user_data.email} not available",
             )
-
         existing_user = self.repository.find_by_username(user_data.username)
-        if existing_user and existing_user.id != user_data.id:  # add this check
+        if existing_user:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail=f"Username {user_data.username} already exists",
+                detail=f"Username {user_data.username} not available",
             )
+        
+        update_user = self.repository.update_full(user_id, user_data)
+        return UserResponse.model_validate(update_user)
 
-        update_user = self.repository.update(user_data)
+    def update_partial(self, user_id: int, user_data: UserUpdate) -> UserResponse:
+        existing_user = self.find_by_id(user_id)
+        if not existing_user:  # add this check
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Username {user_data.username} not found",
+            )
+        existing_user = self.repository.find_by_email(user_data.email)
+        if existing_user:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Email {user_data.email} not available",
+            )
+        existing_user = self.repository.find_by_username(user_data.username)
+        if existing_user:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Username {user_data.username} not available",
+            )
+        
+        update_user = self.repository.update_partial(user_id, user_data)
         return UserResponse.model_validate(update_user)
 
     def delete(self, id: int) -> bool:
