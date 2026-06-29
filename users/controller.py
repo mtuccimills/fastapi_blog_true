@@ -45,17 +45,12 @@ def create(user: UserCreate, service: UserService = Depends(get_service)):
     return service.create(user)
 
 @router.put("/", response_model=UserResponse)
-<<<<<<< HEAD
-def update(user: UserUpdate, service: UserService = Depends(get_service)):
-    return service.update(user)
-=======
 def update_full(user_id: int,user: UserCreate, service: UserService = Depends(get_service)):
     return service.update_full(user_id,user)
 
 @router.patch("/", response_model=UserResponse)
-def update_partial(user_id: int,user: UserUpdate, service: UserService = Depends(get_service)):
+def update_partial(user_id: int, user: UserUpdate, service: UserService = Depends(get_service)):
     return service.update_partial(user_id,user)
->>>>>>> 759d8f44408be76c01af4594ba217c5022bd4cc0
 
 @router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete(id: int, service: UserService = Depends(get_service)):
