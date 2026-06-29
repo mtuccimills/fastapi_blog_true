@@ -1,4 +1,3 @@
-# Schema is the client
 from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
 # Entidade de los modelos de datos a utilizar en el proyecto.
@@ -24,8 +23,8 @@ class UserCreate(UserBase):
     pass
 
 class UserUpdate(BaseModel):
-    username: str | None = Field(defaule=None,min_length=1,max_length=50)
-    email: EmailStr | None = Field(default=None,max_length=120) # EmailStr validates that is not empty
+    username: str | None = Field(default=None, min_length=1, max_length=50)
+    email: EmailStr | None = Field(default=None, max_length=120) # EmailStr validates that is not empty
     
     model_config = ConfigDict(
         from_attributes=True,

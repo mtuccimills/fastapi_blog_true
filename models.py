@@ -1,4 +1,4 @@
-from __future__ import annotations
+#from __future__ import annotations # For forward referances to worK on older version of python.
 
 from datetime import UTC, datetime
 
@@ -20,10 +20,7 @@ class User(Base):
         default=None,
     )
 
-    posts: Mapped[list[Post]] = relationship(
-        back_populates="author",
-        cascade="all, delete-orphan",
-    )
+    posts: Mapped[list[Post]] = relationship(back_populates="author")
 
     @property
     def image_path(self) -> str:
@@ -48,4 +45,6 @@ class Post(Base):
         default=lambda: datetime.now(UTC),
     )
 
-    author: Mapped[User] = relationship(back_populates="posts")
+    author: Mapped[User] = relationship(back_populates="posts")#, lazy="selectin")# Second option for lazyload
+
+    # 2:16:25

@@ -1,53 +1,58 @@
+<<<<<<< HEAD
 from .client import PostCreate, PostUpdate
+=======
+from directories import templates
+>>>>>>> 5bbf0509bec223c9df4777a46b57fdfcf2af1e79
 from .service import PostService
 from .repository import PostRepository
-from fastapi import APIRouter, Depends, HTTPException, Request, status, Form
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi import APIRouter, Request, Depends
 from sqlalchemy.orm import Session
 from db import get_db
-from directories import templates
 
+# Controlador de usuarios, que funciona como capa de contacto con el exterior. Resuelve Requests y devuelve Responses.
+# Maneja JSON Validator, SWAGGER, Auth.
 router = APIRouter()
-
-
+# Iniciamos la vida de la conexión a la base de datos desde que llega la conexión, auqnue no la usemos hasta que lleguemos al controlador.
 def get_service(db: Session = Depends(get_db)) -> PostService:
     repository = PostRepository(db)
-    return PostService(repository)
+    return PostService(repository) # db -> repository -> service
 
+<<<<<<< HEAD
 
 @router.get("/", response_class=HTMLResponse)
 def get_posts(request: Request, service: PostService = Depends(get_service)):
     posts = service.find_all_raw()
+=======
+@router.get("/posts"
+         , include_in_schema= False
+         , name="posts"
+         )
+@router.get("/"
+         , include_in_schema= False
+         , name="home"
+         )
+def home(request: Request, service: PostService = Depends(get_service)):
+>>>>>>> 5bbf0509bec223c9df4777a46b57fdfcf2af1e79
     return templates.TemplateResponse(
         request,
-        "index.html",
-        {"posts": posts}
+        "home.html",
+        {"posts": service.findAll(), "title": "Home"} # Sent information to the view
     )
 
+<<<<<<< HEAD
 
 @router.get("/post/{id}", response_class=HTMLResponse)
 def find_by_id(id: int, request: Request, service: PostService = Depends(get_service)):
     post = service.find_by_id_raw(id)
+=======
+@router.get("/posts/{id}",
+            include_in_schema= False
+            )#, response_model=Post | None)
+def post_page(request: Request, id: int, service: PostService = Depends(get_service)):
+    post = service.findById(id) 
+>>>>>>> 5bbf0509bec223c9df4777a46b57fdfcf2af1e79
     return templates.TemplateResponse(
         request,
         "post.html",
-        {"post": post}
+        {"post": post, "title": f"Post - {post.title[:50]}"} # Sent information to the view
     )
-
-
-@router.get("/post/create", response_class=HTMLResponse)
-def create_post_form(request: Request):
-    return templates.TemplateResponse(request, "create_post.html", {})
-
-
-@router.post("/post/create", response_class=HTMLResponse)
-def create_post(
-    request: Request,
-    title: str = Form(...),
-    content: str = Form(...),
-    user_id: int = Form(...),
-    service: PostService = Depends(get_service),
-):
-    post = PostCreate(title=title, content=content, user_id=user_id)
-    service.create(post)
-    return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)

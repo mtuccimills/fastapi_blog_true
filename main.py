@@ -33,6 +33,9 @@
 # pip install sqlalchemy
 # uv add sqlalchemy
 
+# Video 6
+# CRUD Complete
+
 
 from fastapi import FastAPI, Request, status
 # To add static files

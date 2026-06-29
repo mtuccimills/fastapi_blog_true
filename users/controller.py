@@ -49,7 +49,7 @@ def update_full(user_id: int,user: UserCreate, service: UserService = Depends(ge
     return service.update_full(user_id,user)
 
 @router.patch("/", response_model=UserResponse)
-def update_partial(user_id: int,user: UserUpdate, service: UserService = Depends(get_service)):
+def update_partial(user_id: int, user: UserUpdate, service: UserService = Depends(get_service)):
     return service.update_partial(user_id,user)
 
 @router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)

@@ -1,3 +1,4 @@
-from fastapi.templating import Jinja2Templates
+from fastapi.templating import Jinja2Templates # For HTML responses, not needed for API only
 
-templates = Jinja2Templates(directory="templates")
+
+templates = Jinja2Templates(directory="templates") # Template directory for HTML uses

@@ -1,7 +1,12 @@
+<<<<<<< HEAD
 import models
 from .repository import PostRepository
 from .client import PostCreate, PostUpdate, PostResponse
+=======
+>>>>>>> 5bbf0509bec223c9df4777a46b57fdfcf2af1e79
 
+from .repository import PostRepository
+from .client import PostResponse, PostCreate, PostUpdate
 
 class PostService:
     def __init__(self, repository: PostRepository):
@@ -35,3 +40,4 @@ class PostService:
 
     def delete(self, id: int) -> bool:
         return self.repository.delete(id)
+    
