@@ -25,7 +25,8 @@ class UserCreate(UserBase):
 class UserUpdate(BaseModel):
     username: str | None = Field(default=None, min_length=1, max_length=50)
     email: EmailStr | None = Field(default=None, max_length=120) # EmailStr validates that is not empty
-    
+    image_file: str | None = Field(default=None, min_length=1, max_length=200)
+
     model_config = ConfigDict(
         from_attributes=True,
         populate_by_name=True,

@@ -52,9 +52,17 @@ class UserRepository:
         db_user = self.find_by_id(user_id)
 
         # Update Logic
-        update_date = user_data.model_dump(exclude_unset=True)
-        for field, value in update_date.items():
+        update_data = user_data.model_dump(exclude_unset=True)
+        for field, value in update_data.items():
             setattr(db_user, field, value)
+
+        # # Manual update
+        # if user_data.username is not None:
+        #     db_user.username = user_data.username
+        # if user_data.email is not None:
+        #     db_user.email = user_data.email
+        # if user_data.image_file is not None:
+        #     db_user.image_file = user_data.image_file
 
         self.db.commit()
         self.db.refresh(db_user)

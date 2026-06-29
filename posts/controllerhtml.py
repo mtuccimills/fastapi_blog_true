@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-from .client import PostCreate, PostUpdate
-=======
 from directories import templates
->>>>>>> 5bbf0509bec223c9df4777a46b57fdfcf2af1e79
 from .service import PostService
 from .repository import PostRepository
 from fastapi import APIRouter, Request, Depends
@@ -17,12 +13,6 @@ def get_service(db: Session = Depends(get_db)) -> PostService:
     repository = PostRepository(db)
     return PostService(repository) # db -> repository -> service
 
-<<<<<<< HEAD
-
-@router.get("/", response_class=HTMLResponse)
-def get_posts(request: Request, service: PostService = Depends(get_service)):
-    posts = service.find_all_raw()
-=======
 @router.get("/posts"
          , include_in_schema= False
          , name="posts"
@@ -32,25 +22,17 @@ def get_posts(request: Request, service: PostService = Depends(get_service)):
          , name="home"
          )
 def home(request: Request, service: PostService = Depends(get_service)):
->>>>>>> 5bbf0509bec223c9df4777a46b57fdfcf2af1e79
     return templates.TemplateResponse(
         request,
         "home.html",
         {"posts": service.findAll(), "title": "Home"} # Sent information to the view
     )
 
-<<<<<<< HEAD
-
-@router.get("/post/{id}", response_class=HTMLResponse)
-def find_by_id(id: int, request: Request, service: PostService = Depends(get_service)):
-    post = service.find_by_id_raw(id)
-=======
 @router.get("/posts/{id}",
             include_in_schema= False
             )#, response_model=Post | None)
 def post_page(request: Request, id: int, service: PostService = Depends(get_service)):
     post = service.findById(id) 
->>>>>>> 5bbf0509bec223c9df4777a46b57fdfcf2af1e79
     return templates.TemplateResponse(
         request,
         "post.html",
