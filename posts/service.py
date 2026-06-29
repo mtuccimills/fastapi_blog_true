@@ -1,3 +1,4 @@
+import models
 from .repository import PostRepository
 from .client import PostCreate, PostUpdate, PostResponse
 
@@ -10,9 +11,15 @@ class PostService:
         posts = self.repository.find_all()
         return [PostResponse.model_validate(post) for post in posts]
 
+    def find_all_raw(self) -> list[models.Post]:
+        return self.repository.find_all()
+
     def findById(self, id: int) -> PostResponse:
         post = self.repository.find_by_id(id)
         return PostResponse.model_validate(post)
+
+    def find_by_id_raw(self, id: int) -> models.Post | None:
+        return self.repository.find_by_id(id)
 
     def create(self, post: PostCreate) -> PostResponse:
         new_post = self.repository.create(post)

@@ -10,13 +10,13 @@ class PostRepository:
         self.db = db
 
     def find_all(self) -> list[models.Post]:
-        result = self.db.execute(select(models.Post).options(selectinload(models.Post.user)))
+        result = self.db.execute(select(models.Post).options(selectinload(models.Post.author)))
         db_posts = result.scalars().all()
         return db_posts
 
     def find_by_id(self, id: int) -> models.Post | None:
         result = self.db.execute(
-            select(models.Post).where(models.Post.id == id).options(selectinload(models.Post.user))
+            select(models.Post).where(models.Post.id == id).options(selectinload(models.Post.author))
         )
         db_post = result.scalar_one_or_none()
         return db_post

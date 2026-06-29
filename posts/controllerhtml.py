@@ -1,4 +1,4 @@
-from .client import PostCreate, PostUpdate, PostResponse
+from .client import PostCreate, PostUpdate
 from .service import PostService
 from .repository import PostRepository
 from fastapi import APIRouter, Depends, HTTPException, Request, status, Form
@@ -17,7 +17,7 @@ def get_service(db: Session = Depends(get_db)) -> PostService:
 
 @router.get("/", response_class=HTMLResponse)
 def get_posts(request: Request, service: PostService = Depends(get_service)):
-    posts = service.findAll()
+    posts = service.find_all_raw()
     return templates.TemplateResponse(
         request,
         "index.html",
@@ -27,7 +27,7 @@ def get_posts(request: Request, service: PostService = Depends(get_service)):
 
 @router.get("/post/{id}", response_class=HTMLResponse)
 def find_by_id(id: int, request: Request, service: PostService = Depends(get_service)):
-    post = service.findById(id)
+    post = service.find_by_id_raw(id)
     return templates.TemplateResponse(
         request,
         "post.html",
