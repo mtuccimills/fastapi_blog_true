@@ -59,7 +59,7 @@ from users import controller as controllerUser, controllerhtml as controllerhtml
 from directories import templates
 
 # Create database
-from db import Base, engine
+from db import Base, async_engine
 
 #7 Async
 from contextlib import asynccontextmanager
@@ -72,11 +72,11 @@ from fastapi.exception_handlers import http_exception_handler, request_validatio
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
     #Startup
-    async with engine.begin() as conn:
+    async with async_engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
     yield
     # Shutdown
-    await engine.dispose()
+    await async_engine.dispose()
 
 # Added lifespan
 app = FastAPI(lifespan=lifespan)
@@ -90,18 +90,22 @@ app.include_router(controllerhtmlUser.router, prefix="/users", tags=["User"])
 
 ## StarletteHTTPException Handler
 @app.exception_handler(StarletteHTTPException)
-def general_http_exception_handler(request: Request, exception: StarletteHTTPException):
-    message = (
-        exception.detail
-        if exception.detail
-        else "An error occurred. Please check your request and try again."
-    )
+async def general_http_exception_handler(request: Request, exception: StarletteHTTPException):
+
 
     if request.url.path.startswith("/api"):
-        return JSONResponse(
-            status_code=exception.status_code,
-            content={"detail": message},
-        )
+        # Async
+        return await http_exception_handler(request, exception) 
+        # Sync
+    #     return JSONResponse(
+    #         status_code=exception.status_code,
+    #         content={"detail": message},
+    #     )
+    message = (
+    exception.detail
+    if exception.detail
+    else "An error occurred. Please check your request and try again."
+    )
     return templates.TemplateResponse(
         request,
         "error.html",
@@ -116,12 +120,15 @@ def general_http_exception_handler(request: Request, exception: StarletteHTTPExc
 
 ### RequestValidationError Handler
 @app.exception_handler(RequestValidationError)
-def validation_exception_handler(request: Request, exception: RequestValidationError):
+async def validation_exception_handler(request: Request, exception: RequestValidationError):
     if request.url.path.startswith("/api"):
-        return JSONResponse(
-            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
-            content={"detail": exception.errors()},
-        )
+        # Async
+        return await request_validation_exception_handler(request, exception) 
+        # Sync
+        # return JSONResponse(
+        #     status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+        #     content={"detail": exception.errors()},
+        # )
     return templates.TemplateResponse(
         request,
         "error.html",

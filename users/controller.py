@@ -12,9 +12,9 @@ from db import get_async_db
 # Maneja JSON Validator, SWAGGER, Auth.
 router = APIRouter()
 # Iniciamos la vida de la conexión a la base de datos desde que llega la conexión, auqnue no la usemos hasta que lleguemos al controlador.
-async def get_service(db:AsyncSession = Depends(get_async_db)) -> UserService:
-    repository = await UserRepository(db)
-    return await UserService(repository)
+def get_service(db:AsyncSession = Depends(get_async_db)) -> UserService:
+    repository = UserRepository(db)
+    return UserService(repository)
 
 @router.get("/", response_model=list[UserResponse])
 async def get_users(service: UserService = Depends(get_service)):
