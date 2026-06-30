@@ -36,6 +36,14 @@
 # Video 6
 # CRUD Complete
 
+# Video 7
+# Async, use it for: I/O operation, file operation, API operation.
+# FastAPI def  runs it on another loop 
+# FastAPI async def runs in the main loop, ensure the await.
+# pip install aiosqlite greenlet # aiosqllite asyncrononus manager for sqllite
+# uv add aiosqlite greenlet
+# 4:00 horas
+
 
 from fastapi import FastAPI, Request, status
 # To add static files
@@ -43,7 +51,6 @@ from fastapi.staticfiles import StaticFiles
 
 # General exceptions
 from fastapi.exceptions import RequestValidationError
-from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException # Not used fasstapi http exception, but to better understand the exception name.
 
 # Clean Architecture modifications, adding client
@@ -54,9 +61,25 @@ from directories import templates
 # Create database
 from db import Base, engine
 
-Base.metadata.create_all(bind=engine)
+#7 Async
+from contextlib import asynccontextmanager
+from fastapi.exception_handlers import http_exception_handler, request_validation_exception_handler
+#from fastapi.responses import JSONResponse
 
-app = FastAPI()
+#Syncrhonos funciton
+#Base.metadata.create_all(bind=engine)
+#Turned to asyncronos
+@asynccontextmanager
+async def lifespan(_app: FastAPI):
+    #Startup
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+    yield
+    # Shutdown
+    await engine.dispose()
+
+# Added lifespan
+app = FastAPI(lifespan=lifespan)
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
 app.mount("/media", StaticFiles(directory="media"), name="media")
