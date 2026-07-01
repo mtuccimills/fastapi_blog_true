@@ -54,8 +54,9 @@ from fastapi.exceptions import RequestValidationError
 from starlette.exceptions import HTTPException as StarletteHTTPException # Not used fasstapi http exception, but to better understand the exception name.
 
 # Clean Architecture modifications, adding client
-from posts import controller, controllerhtml
-from users import controller as controllerUser, controllerhtml as controllerhtmlUser
+from routers.posts import controllerhtml
+from routers.users import controller as controllerUser
+from routers.users import controllerhtml as controllerhtmlUser
 from directories import templates
 
 # Create database
@@ -64,6 +65,8 @@ from db import Base, async_engine
 #7 Async
 from contextlib import asynccontextmanager
 from fastapi.exception_handlers import http_exception_handler, request_validation_exception_handler
+
+from routers.posts import controller
 #from fastapi.responses import JSONResponse
 
 #Syncrhonos funciton
