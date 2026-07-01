@@ -1,4 +1,4 @@
-# Video 1
+# Video 1initiation of the project
 # Initiate the project (creates folder)
 # uv init fastapi_blog_true
 # Adding fastapi with STANDARD adds jinja2
@@ -6,7 +6,7 @@
 # Run application
 # uv run fastapi dev main.py
 
-# Video 2
+# Video 2 Ninja2 Templates
 # Jinja2 Templates
 # Templates = dynamic data
 # Past data to templates
@@ -15,16 +15,16 @@
 # pip install jinja2
 # uv add jinja2 #This is in case you didn't used [standard] when installing fasapi
 
-# Video 3
+# Video 3 Exceptions and validation errors
 # exceptions
 # single api response of 1 post
 # Validastion errors
 
-# Video 4
+# Video 4 Pydantic models and schemas
 # Pydantic models and schemas
 # Post endpoint to add posts
 
-# Video 5
+# Video 5 - Database integration SQLAlchemy
 # Connecting to a real database with SQLAlchemy
 # 3 LAYERS
 # sql model
@@ -33,10 +33,10 @@
 # pip install sqlalchemy
 # uv add sqlalchemy
 
-# Video 6
+# Video 6 - CRUD API
 # CRUD Complete
 
-# Video 7
+# Video 7 - Async
 # Async, use it for: I/O operation, file operation, API operation.
 # FastAPI def  runs it on another loop 
 # FastAPI async def runs in the main loop, ensure the await.
@@ -44,6 +44,18 @@
 # uv add aiosqlite greenlet
 # 4:00 horas
 
+# Video 8 - Frontend forms with Ninja2
+# Frontendforms with Ninja2
+
+# Video 9 - Authenthication
+#"pwdlib[argon2]" for password hashing
+# pyjwt for JWT token for authentication
+# pydatyic-settings for environment variables management and Cleaner error messages than env. It's better than python.env ause it centralizes the configuration, validates variable type using pydantic, it fails with clear error, it uses secret string from pydantic to not expose the secret in the code, it can also be easely used with compose.
+# pip install "pwdlib[argon2]" pyjwt pydantic-settings
+# uv add "pwdlib[argon2]" pyjwt pydantic-settings
+# python -c "import secrets; print(secrets.token_hex(32))" # Creates a secret key example
+# Added .env file with pydantic-settings
+# Added authenthication with JWT token and password hashing
 
 from fastapi import FastAPI, Request, status
 # To add static files
@@ -90,6 +102,25 @@ app.include_router(controller.router, prefix="/api/v1/posts", tags=["Post"])
 app.include_router(controllerhtml.router, tags=["Post"])
 app.include_router(controllerUser.router, prefix="/api/v1/users", tags=["User"])
 app.include_router(controllerhtmlUser.router, prefix="/users", tags=["User"])
+
+## General routes
+@app.get("/login", include_in_schema=False)
+async def login_page(request: Request):
+    return templates.TemplateResponse(
+        request,
+        "login.html",
+        {"title": "Login"},
+    )
+
+
+@app.get("/register", include_in_schema=False)
+async def register_page(request: Request):
+    return templates.TemplateResponse(
+        request,
+        "register.html",
+        {"title": "Register"},
+    )
+
 
 ## StarletteHTTPException Handler
 @app.exception_handler(StarletteHTTPException)
